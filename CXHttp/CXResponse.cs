@@ -13,7 +13,7 @@ namespace CXHttpNS
     {
         private CancellationTokenSource cts;
         private HttpResponseMessage res;
-        private HttpCookieCollection cookies;
+        public HttpCookieCollection mCookies;
 
         /// <summary>
         /// Constructor: from <see cref="HttpResponseMessage"/>
@@ -22,44 +22,23 @@ namespace CXHttpNS
         public CXResponse(HttpResponseMessage res, HttpCookieCollection cookies = null)
         {
             this.res = res;
-            this.cookies = cookies;
+            this.mCookies = cookies;
             cts = new CancellationTokenSource();
         }
 
-        /// <summary>
-        /// Get response headers
-        /// </summary>
-        /// <returns><see cref="HttpResponseHeaderCollection"/></returns>
-        public HttpResponseHeaderCollection Headers()
-        {
-            return res.Headers;
-        }
-
-        /// <summary>
-        /// Get cookies
-        /// </summary>
-        /// <returns></returns>
-        public HttpCookieCollection Cookies()
-        {
-            return cookies;
-        }
-
-        /// <summary>
-        /// Get specific response header
-        /// </summary>
-        /// <param name="key">Specific header name</param>
-        /// <returns>Specific header value</returns>
-        public string Header(string key)
-        {
-            return res.Headers[key];
-        }
+        public HttpResponseHeaderCollection headers { get => res.Headers; }
+        public HttpCookieCollection cookies { get => mCookies; }
 
         /// <summary>
         /// Get response body content
         /// </summary>
         /// <returns><c>Task&lt;string&gt;</c></returns>
-        public async Task<string> Content()
+        public async Task<string> Content(string charset = "")
         {
+            if (charset != "")
+                res.Content.Headers.ContentType.CharSet = charset;
+            else if (res.Content.Headers.ContentType.CharSet == "")
+                res.Content.Headers.ContentType.CharSet = "UTF-8";
             return await res.Content.ReadAsStringAsync().AsTask(cts.Token);
         }
 

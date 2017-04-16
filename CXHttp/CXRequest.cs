@@ -20,7 +20,7 @@ namespace CXHttpNS
         HttpRequestHeaderCollection headers;
 
         Dictionary<string, string> data = new Dictionary<string, string>();
-        string rawData;
+        string rawData = "";
 
         /// <summary>
         /// Default Constructor
@@ -67,6 +67,9 @@ namespace CXHttpNS
         public CXRequest Url(string url)
         {
             this.url = url;
+            this.data.Clear();
+            this.rawData = "";
+            this.headers.Clear();
             return this;
         }
 
@@ -180,7 +183,7 @@ namespace CXHttpNS
         public async Task<CXResponse> Post()
         {
             IHttpContent content;
-            if (rawData != null)
+            if (rawData != "")
             {
                 content = new HttpStringContent(rawData);
             }
