@@ -20,11 +20,11 @@ var html = await res.Content();
 
 var res = await CXHttp.Connect("http://gw.bnu.edu.cn:803/srun_portal_pc.php?ac_id=1")
 			.Header("User-Agent", "IE")
-            .Data("action", "login")
-            .Data("ac_id", "1")
-            .Data("username", "username")
-            .Data("password", "password")
-            .Post();
+			.Data("action", "login")
+			.Data("ac_id", "1")
+			.Data("username", "username")
+			.Data("password", "password")
+			.Post();
 var html = await res.Content();
 
 ```
@@ -46,12 +46,12 @@ var res = await CXHttp.Session("zyfw").req
             
 // One name, one session. So Cookies are shared.
 res = await CXHttp.Session("zyfw").req
-    .Url(URL)
-    .Header("User-Agent", USER_AGENT)
-    .Data("username", "—ß∫≈")
-    .Data("password", "√‹¬Î")
+	.Url(URL)
+	.Header("User-Agent", USER_AGENT)
+	.Data("username", "username")
+	.Data("password", "password")
 	// ...
-    .Post();
+	.Post();
 
 // Specific encoding
 html = await res.Content("GBK");
