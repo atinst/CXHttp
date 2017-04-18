@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>CXHttp</id>
+    <version>1.0.0</version>
+    <authors>Hongxu Xu</authors>
+    <owners>Hongxu Xu</owners>
+    <licenseUrl>https://www.gnu.org/licenses/gpl-3.0.txt</licenseUrl>
+    <projectUrl>https://github.com/xuhongxu96/CXHttp</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A Simple HTTP Client for C# (UWP)</description>
+    <releaseNotes>First Package</releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>HTTP Client REST RESTful POST</tags>
+  </metadata>
+
+  <files>
+    <file src="./bin/x86/Release/CXHttp.dll" target="runtimes\win10-x86\lib\uap10.0" />
+    <file src="./bin/x86/Release/CXHttp.pdb" target="runtimes\win10-x86\lib\uap10.0" />
+    <file src="./bin/x64/Release/CXHttp.dll" target="runtimes\win10-x64\lib\uap10.0" />
+    <file src="./bin/x64/Release/CXHttp.pdb" target="runtimes\win10-x64\lib\uap10.0" />
+    <file src="./bin/ARM/Release/CXHttp.dll" target="runtimes\win10-arm\lib\uap10.0" />
+    <file src="./bin/ARM/Release/CXHttp.pdb" target="runtimes\win10-arm\lib\uap10.0" />
+
+    <file src="./bin/Release/CXHttp.dll" target="ref\uap10.0" />
+    <file src="./bin/Release/CXHttp.pdb" target="ref\uap10.0" />
+  </files>
+</package>
