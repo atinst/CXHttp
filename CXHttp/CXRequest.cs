@@ -7,30 +7,39 @@ using Windows.Web.Http;
 using Windows.Web.Http.Headers;
 using Windows.Web.Http.Filters;
 using System.Threading;
+using Windows.Security.Cryptography.Certificates;
+using Windows.Security.Credentials;
+using Windows.Foundation;
 
 namespace CXHttpNS
 {
     public class CXRequest
     {
         private CancellationTokenSource cts;
-        private HttpBaseProtocolFilter filter;
-        private HttpClient httpClient;
+        private HttpBaseProtocolFilter mFilter;
+        private HttpClient mHttpClient;
 
-        string url;
-        HttpRequestHeaderCollection headers;
+        private string url;
+        private HttpRequestHeaderCollection mHeaders;
 
-        Dictionary<string, string> data = new Dictionary<string, string>();
-        string rawData = "";
+        private Dictionary<string, string> data = new Dictionary<string, string>();
+        private string rawData = "";
+
+        private IHttpContent mHttpContent = null;
+
+        public HttpBaseProtocolFilter Filter { get { return mFilter; } }
+        public HttpRequestHeaderCollection HeaderCollection { get { return mHeaders; } }
+        public HttpClient HttpClient { get { return mHttpClient; } }
 
         /// <summary>
         /// Default Constructor
         /// </summary>
         public CXRequest()
         {
-            filter = new HttpBaseProtocolFilter();
-            httpClient = new HttpClient(filter);
+            mFilter = new HttpBaseProtocolFilter();
+            mHttpClient = new HttpClient(mFilter);
             cts = new CancellationTokenSource();
-            headers = httpClient.DefaultRequestHeaders;
+            mHeaders = mHttpClient.DefaultRequestHeaders;
         }
 
         /// <summary>
@@ -39,10 +48,10 @@ namespace CXHttpNS
         /// <param name="url">Request URL</param>
         public CXRequest(string url)
         {
-            filter = new HttpBaseProtocolFilter();
-            httpClient = new HttpClient(filter);
+            mFilter = new HttpBaseProtocolFilter();
+            mHttpClient = new HttpClient(mFilter);
             cts = new CancellationTokenSource();
-            headers = httpClient.DefaultRequestHeaders;
+            mHeaders = mHttpClient.DefaultRequestHeaders;
             this.url = url;
         }
 
@@ -50,13 +59,189 @@ namespace CXHttpNS
         /// Constructor: from existed <see cref="HttpClient"/>
         /// </summary>
         /// <param name="filter"><see cref="HttpBaseProtocolFilter"/></param>
-        /// <param name="client"><see cref="httpClient"/></param>
+        /// <param name="client"><see cref="mHttpClient"/></param>
         public CXRequest(HttpBaseProtocolFilter filter, HttpClient client)
         {
-            this.filter = filter;
-            httpClient = client;
+            this.mFilter = filter;
+            mHttpClient = client;
             cts = new CancellationTokenSource();
-            headers = httpClient.DefaultRequestHeaders;
+            mHeaders = mHttpClient.DefaultRequestHeaders;
+        }
+
+        /// <summary>
+        /// Reset request parameters
+        /// </summary>
+        private void Clean()
+        {
+            url = "";
+            data.Clear();
+            rawData = "";
+            mHttpClient = null;
+            mHeaders.Clear();
+        }
+
+        /// <summary>
+        /// Set auto redirect allowed
+        /// </summary>
+        /// <param name="allow">is allowed</param>
+        /// <returns><see cref="CXRequest"/></returns>
+        public CXRequest AllowAutoRedirect(bool allow = true)
+        {
+            mFilter.AllowAutoRedirect = allow;
+            return this;
+        }
+
+        /// <summary>
+        /// Set UI allowed
+        /// </summary>
+        /// <param name="allow">is allowed</param>
+        /// <returns><see cref="CXRequest"/></returns>
+        public CXRequest AllowUI(bool allow = true)
+        {
+            mFilter.AllowUI = allow;
+            return this;
+        }
+
+        /// <summary>
+        /// Set automatic decompression enabled
+        /// </summary>
+        /// <param name="enable">is enabled</param>
+        /// <returns><see cref="CXRequest"/></returns>
+        public CXRequest AutomaticDecompression(bool enable = true)
+        {
+            mFilter.AutomaticDecompression = enable;
+            return this;
+        }
+
+        /// <summary>
+        /// Set cache read behavior
+        /// </summary>
+        /// <param name="behavior"><see cref="HttpCacheReadBehavior"/></param>
+        /// <returns><see cref="CXRequest"/></returns>
+        public CXRequest CacheReadBehavior(HttpCacheReadBehavior behavior = HttpCacheReadBehavior.Default)
+        {
+            mFilter.CacheControl.ReadBehavior = behavior;
+            return this;
+        }
+
+        /// <summary>
+        /// Set client certificate
+        /// </summary>
+        /// <param name="cert"><see cref="Certificate"/></param>
+        /// <returns><see cref="CXRequest"/></returns>
+        public CXRequest ClientCertificate(Certificate cert)
+        {
+            mFilter.ClientCertificate = cert;
+            return this;
+        }
+
+        /// <summary>
+        /// Set cookie usage behavior
+        /// </summary>
+        /// <param name="behavior"><see cref="HttpCookieUsageBehavior"/></param>
+        /// <returns><see cref="CXRequest"/></returns>
+        public CXRequest CookieUsageBehavior(HttpCookieUsageBehavior behavior)
+        {
+            mFilter.CookieUsageBehavior = behavior;
+            return this;
+        }
+
+        /// <summary>
+        /// Set an ignorable server certificate error
+        /// </summary>
+        /// <param name="error"><see cref="ChainValidationResult"/></param>
+        /// <returns><see cref="CXRequest"/></returns>
+        public CXRequest IgnoreServerCertificateError(ChainValidationResult error)
+        {
+            mFilter.IgnorableServerCertificateErrors.Add(error);
+            return this;
+        }
+
+        /// <summary>
+        /// Set a list of ignorable server certificate errors
+        /// </summary>
+        /// <param name="error">a list of <see cref="ChainValidationResult"/></param>
+        /// <returns><see cref="CXRequest"/></returns>
+        public CXRequest IgnoreServerCertificateErrors(IList<ChainValidationResult> errors)
+        {
+            mFilter.IgnorableServerCertificateErrors.Concat(errors);
+            return this;
+        }
+
+        /// <summary>
+        /// Set cache write behavior
+        /// </summary>
+        /// <param name="behavior"><see cref="HttpCacheWriteBehavior"/></param>
+        /// <returns><see cref="CXRequest"/></returns>
+        public CXRequest CacheWriteBehavior(HttpCacheWriteBehavior behavior = HttpCacheWriteBehavior.Default)
+        {
+            mFilter.CacheControl.WriteBehavior = behavior;
+            return this;
+        }
+
+        /// <summary>
+        /// Set max connections per server
+        /// </summary>
+        /// <param name="n">max connections</param>
+        /// <returns><see cref="CXRequest"/></returns>
+        public CXRequest MaxConnectionsPerServer(uint n)
+        {
+            mFilter.MaxConnectionsPerServer = n;
+            return this;
+        }
+
+        /// <summary>
+        /// Set max HTTP version
+        /// </summary>
+        /// <param name="ver"><see cref="HttpVersion"/></param>
+        /// <returns><see cref="CXRequest"/></returns>
+        public CXRequest MaxHTTPVersion(HttpVersion ver)
+        {
+            mFilter.MaxVersion = ver;
+            return this;
+        }
+
+        /// <summary>
+        /// Set proxy credential
+        /// </summary>
+        /// <param name="credential"><see cref="PasswordCredential"/></param>
+        /// <returns><see cref="CXRequest"/></returns>
+        public CXRequest ProxyCredential(PasswordCredential credential)
+        {
+            mFilter.ProxyCredential = credential;
+            return this;
+        }
+
+        /// <summary>
+        /// Set server credential
+        /// </summary>
+        /// <param name="credential"><see cref="ServerCredential "/></param>
+        /// <returns><see cref="CXRequest"/></returns>
+        public CXRequest ServerCredential(PasswordCredential credential)
+        {
+            mFilter.ServerCredential = credential;
+            return this;
+        }
+
+        /// <summary>
+        /// Set proxy used
+        /// </summary>
+        /// <param name="use">is used</param>
+        /// <returns><see cref="CXRequest"/></returns>
+        public CXRequest UseProxy(bool use)
+        {
+            mFilter.UseProxy = use;
+            return this;
+        }
+
+        TypedEventHandler<HttpBaseProtocolFilter, HttpServerCustomValidationRequestedEventArgs> customValidationHandler = null;
+        public CXRequest ServerCustomValidationRequested(TypedEventHandler<HttpBaseProtocolFilter, HttpServerCustomValidationRequestedEventArgs> handler)
+        {
+            if (customValidationHandler != null)
+                mFilter.ServerCustomValidationRequested -= customValidationHandler;
+            customValidationHandler = handler;
+            mFilter.ServerCustomValidationRequested += customValidationHandler;
+            return this;
         }
 
         /// <summary>
@@ -66,10 +251,8 @@ namespace CXHttpNS
         /// <returns><see cref="CXRequest"/></returns>
         public CXRequest Url(string url)
         {
+            Clean();
             this.url = url;
-            this.data.Clear();
-            this.rawData = "";
-            this.headers.Clear();
             return this;
         }
 
@@ -81,7 +264,7 @@ namespace CXHttpNS
         /// <returns><see cref="CXRequest"/></returns>
         public CXRequest Header(string key, string value)
         {
-            this.headers.Add(key, value);
+            this.mHeaders.Add(key, value);
             return this;
         }
 
@@ -92,7 +275,7 @@ namespace CXHttpNS
         /// <returns><see cref="CXRequest"/></returns>
         public CXRequest Headers(HttpRequestHeaderCollection headers)
         {
-            this.headers.Concat(headers);
+            this.mHeaders.Concat(headers);
             return this;
         }
 
@@ -131,6 +314,17 @@ namespace CXHttpNS
         }
 
         /// <summary>
+        /// Set custom HTTP content (data)
+        /// </summary>
+        /// <param name="data"><see cref="IHttpContent"/></param>
+        /// <returns><see cref="CXRequest"/></returns>
+        public CXRequest Data(IHttpContent data)
+        {
+            mHttpContent = data;
+            return this;
+        }
+
+        /// <summary>
         /// Set cookies
         /// </summary>
         /// <param name="cookies"><see cref="HttpCookieCollection"/></param>
@@ -139,7 +333,7 @@ namespace CXHttpNS
         {
             foreach (var cookie in cookies)
             {
-                filter.CookieManager.SetCookie(cookie);
+                mFilter.CookieManager.SetCookie(cookie);
             }
             return this;
         }
@@ -154,13 +348,17 @@ namespace CXHttpNS
         }
 
         /// <summary>
-        /// Make a get request
+        /// Make a GET request
         /// </summary>
         /// <returns><c>Task&lt;Response&gt;</c></returns>
         public async Task<CXResponse> Get()
         {
             string tempUrl = url;
-            if (rawData != "")
+            if (mHttpContent != null)
+            {
+                tempUrl += "?" + await mHttpContent.ReadAsStringAsync().AsTask(cts.Token).ConfigureAwait(false);
+            }
+            else if (rawData != "")
             {
                 tempUrl += "?" + rawData;
             }
@@ -171,19 +369,23 @@ namespace CXHttpNS
                 tempUrl += "?" + p;
             }
             Uri uri = new Uri(tempUrl);
-            HttpResponseMessage res = await httpClient.GetAsync(uri).AsTask(cts.Token).ConfigureAwait(false);
+            HttpResponseMessage res = await mHttpClient.GetAsync(uri).AsTask(cts.Token).ConfigureAwait(false);
 
-            return new CXResponse(res, filter.CookieManager.GetCookies(uri));
+            return new CXResponse(res, mFilter.CookieManager.GetCookies(uri));
         }
 
         /// <summary>
-        /// Make a post request
+        /// Make a POST request
         /// </summary>
         /// <returns><c>Task&lt;Response&gt;</c></returns>
         public async Task<CXResponse> Post()
         {
             IHttpContent content;
-            if (rawData != "")
+            if (mHttpContent != null)
+            {
+                content = mHttpContent;
+            }
+            else if (rawData != "")
             {
                 content = new HttpStringContent(rawData);
             }
@@ -192,8 +394,43 @@ namespace CXHttpNS
                 content = new HttpFormUrlEncodedContent(data);
             }
             Uri uri = new Uri(url);
-            HttpResponseMessage res = await httpClient.PostAsync(uri, content).AsTask(cts.Token).ConfigureAwait(false);
-            return new CXResponse(res, filter.CookieManager.GetCookies(uri));
+            HttpResponseMessage res = await mHttpClient.PostAsync(uri, content).AsTask(cts.Token).ConfigureAwait(false);
+            return new CXResponse(res, mFilter.CookieManager.GetCookies(uri));
+        }
+
+        /// <summary>
+        /// Make a DELETE request
+        /// </summary>
+        /// <returns><c>Task&lt;Response&gt;</c></returns>
+        public async Task<CXResponse> Delete()
+        {
+            Uri uri = new Uri(url);
+            HttpResponseMessage res = await mHttpClient.DeleteAsync(uri).AsTask(cts.Token).ConfigureAwait(false);
+            return new CXResponse(res, mFilter.CookieManager.GetCookies(uri));
+        }
+
+        /// <summary>
+        /// Make a PUT request
+        /// </summary>
+        /// <returns><c>Task&lt;Response&gt;</c></returns>
+        public async Task<CXResponse> Put()
+        {
+            IHttpContent content;
+            if (mHttpContent != null)
+            {
+                content = mHttpContent;
+            }
+            else if (rawData != "")
+            {
+                content = new HttpStringContent(rawData);
+            }
+            else
+            {
+                content = new HttpFormUrlEncodedContent(data);
+            }
+            Uri uri = new Uri(url);
+            HttpResponseMessage res = await mHttpClient.PutAsync(uri, content).AsTask(cts.Token).ConfigureAwait(false);
+            return new CXResponse(res, mFilter.CookieManager.GetCookies(uri));
         }
 
         /// <summary>
@@ -201,16 +438,16 @@ namespace CXHttpNS
         /// </summary>
         public void Dispose()
         {
-            if (filter != null)
+            if (mFilter != null)
             {
-                filter.Dispose();
-                filter = null;
+                mFilter.Dispose();
+                mFilter = null;
             }
 
-            if (httpClient != null)
+            if (mHttpClient != null)
             {
-                httpClient.Dispose();
-                httpClient = null;
+                mHttpClient.Dispose();
+                mHttpClient = null;
             }
 
             if (cts != null)

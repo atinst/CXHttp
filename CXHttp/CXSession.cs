@@ -33,5 +33,10 @@ namespace CXHttpNS
             httpClient = new HttpClient(filter);
             req = new CXRequest(filter, httpClient);
         }
+
+        public void ClearAuthenticationCache()
+        {
+            filter.ClearAuthenticationCache();
+        }
     }
 }
