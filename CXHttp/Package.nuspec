@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>CXHttp</id>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <authors>Hongxu Xu</authors>
     <owners>Hongxu Xu</owners>
     <licenseUrl>https://www.gnu.org/licenses/gpl-3.0.txt</licenseUrl>
