@@ -19,7 +19,7 @@ namespace CXHttpNS
         public CXResponse(HttpResponseMessage res, HttpCookieCollection cookies = null)
         {
             this.res = res;
-            this.mCookies = cookies;
+            mCookies = cookies;
             cts = new CancellationTokenSource();
         }
 

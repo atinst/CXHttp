@@ -61,7 +61,7 @@ namespace CXHttpNS
         /// <param name="client"><see cref="mHttpClient"/></param>
         public CXRequest(HttpBaseProtocolFilter filter, HttpClient client)
         {
-            this.mFilter = filter;
+            mFilter = filter;
             mHttpClient = client;
             cts = new CancellationTokenSource();
             mHeaders = mHttpClient.DefaultRequestHeaders;
@@ -75,7 +75,6 @@ namespace CXHttpNS
             url = "";
             data.Clear();
             rawData = "";
-            mHttpClient = null;
             mHeaders.Clear();
         }
 
@@ -369,7 +368,6 @@ namespace CXHttpNS
             }
             Uri uri = new Uri(tempUrl);
             HttpResponseMessage res = await mHttpClient.GetAsync(uri).AsTask(cts.Token).ConfigureAwait(false);
-
             return new CXResponse(res, mFilter.CookieManager.GetCookies(uri));
         }
 
