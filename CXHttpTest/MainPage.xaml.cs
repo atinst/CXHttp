@@ -115,8 +115,8 @@ namespace CXHttpTest
         private void button_Click(object sender, RoutedEventArgs e)
         {
             textBox.Text = "Test started.\n";
-            //Test1();
-            //Test2();
+            Test1();
+            Test2();
             Test3();
         }
     }
