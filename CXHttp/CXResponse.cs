@@ -23,8 +23,8 @@ namespace CXHttpNS
             cts = new CancellationTokenSource();
         }
 
-        public HttpResponseHeaderCollection headers { get => res.Headers; }
-        public HttpCookieCollection cookies { get => mCookies; }
+        public HttpResponseHeaderCollection Headers { get { return res.Headers; } }
+        public HttpCookieCollection Cookies { get { return mCookies; } }
 
         /// <summary>
         /// Get response body content
