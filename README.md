@@ -3,6 +3,14 @@ CXHttp
 
 A Simple HTTP Client for C# (UWP) inspired by [Jsoup](https://jsoup.org/).
 
+## Installation
+
+To install [CXHttp](https://www.nuget.org/packages/CXHttp/1.0.0), run the following command in the [Package Manager Console](https://docs.microsoft.com/en-us/nuget/tools/package-manager-console) 
+
+```
+PM> Install-Package CXHttp 
+```
+
 ## Examples
 
 ### Simple GET
