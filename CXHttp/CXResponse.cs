@@ -32,6 +32,10 @@ namespace CXHttpNS
         /// <returns><c>Task&lt;string&gt;</c></returns>
         public async Task<string> Content(string charset = "")
         {
+            if (res.Content.Headers.ContentType == null)
+            {
+                res.Content.Headers.ContentType = new HttpMediaTypeHeaderValue("text/plain");
+            }
             if (charset != "")
                 res.Content.Headers.ContentType.CharSet = charset;
             else if (res.Content.Headers.ContentType.CharSet == "")
