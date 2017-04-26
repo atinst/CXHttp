@@ -32,14 +32,13 @@ namespace CXHttpNS
         /// <returns><c>Task&lt;string&gt;</c></returns>
         public async Task<string> Content(string charset = "")
         {
-            if (res.Content.Headers.ContentType == null)
-            {
-                res.Content.Headers.ContentType = new HttpMediaTypeHeaderValue("text/plain");
-            }
-            if (charset != "")
+            if (charset != "") {
+                if (res.Content.Headers.ContentType == null)
+                {
+                    res.Content.Headers.ContentType = new HttpMediaTypeHeaderValue("text/plain");
+                }
                 res.Content.Headers.ContentType.CharSet = charset;
-            else if (res.Content.Headers.ContentType.CharSet == "")
-                res.Content.Headers.ContentType.CharSet = "UTF-8";
+            }
             return await res.Content.ReadAsStringAsync().AsTask(cts.Token);
         }
 

@@ -2,14 +2,14 @@
 <package >
   <metadata>
     <id>CXHttp</id>
-    <version>1.0.4</version>
+    <version>1.0.7</version>
     <authors>Hongxu Xu</authors>
     <owners>Hongxu Xu</owners>
     <licenseUrl>https://www.gnu.org/licenses/gpl-3.0.txt</licenseUrl>
     <projectUrl>https://github.com/xuhongxu96/CXHttp</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A Simple HTTP Client for C# (UWP)</description>
-    <releaseNotes>Fixed: Failed to get response content when there is no Content-Type in response headers.</releaseNotes>
+    <releaseNotes>Fixed: 1. error occured while selecting encoding; 2. Add CXRequest.ClearCookie() to clear cookies before request</releaseNotes>
     <copyright>Copyright 2017</copyright>
     <tags>HTTP Client REST RESTful POST</tags>
   </metadata>

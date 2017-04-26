@@ -75,7 +75,7 @@ namespace CXHttpTest
 
             textBox.Text += "Test3 Started\n";
 
-            var t = await CXHttp.Session("zyfw").req
+            var t = await CXHttp.Session("zyfw").Req
                 .Url(URL)
                 .Header("User-Agent", USER_AGENT)
                 .Get();
@@ -89,10 +89,11 @@ namespace CXHttpTest
             string exec = mc.Groups[1].Value;
 
             
-            t = await CXHttp.Session("zyfw").req
+            t = await CXHttp.Session("zyfw").Req
                 .Url(URL)
+                .ClearCookie()
                 .Header("User-Agent", USER_AGENT)
-                .Data("username", "学号")
+                .Data("username", "用户名")
                 .Data("password", "密码")
                 .Data("code", "code")
                 .Data("lt", lt)

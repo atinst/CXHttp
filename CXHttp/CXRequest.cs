@@ -26,6 +26,8 @@ namespace CXHttpNS
 
         private IHttpContent mHttpContent = null;
 
+        private bool isClearCookies = false;
+
         public HttpBaseProtocolFilter Filter { get { return mFilter; } }
         public HttpRequestHeaderCollection HeaderCollection { get { return mHeaders; } }
         public HttpClient HttpClient { get { return mHttpClient; } }
@@ -76,6 +78,7 @@ namespace CXHttpNS
             data.Clear();
             rawData = "";
             mHeaders.Clear();
+            isClearCookies = false;
         }
 
         /// <summary>
@@ -323,17 +326,39 @@ namespace CXHttpNS
         }
 
         /// <summary>
-        /// Set cookies
+        /// Set cookie
         /// </summary>
-        /// <param name="cookies"><see cref="HttpCookieCollection"/></param>
+        /// <param name="cookie"><see cref="HttpCookie"/></param>
         /// <returns></returns>
-        public CXRequest Cookies(HttpCookieCollection cookies)
+        public CXRequest Cookie(HttpCookie cookie)
         {
-            foreach (var cookie in cookies)
-            {
-                mFilter.CookieManager.SetCookie(cookie);
-            }
+            mFilter.CookieManager.SetCookie(cookie);
             return this;
+        }
+
+        /// <summary>
+        /// Set if clear cookies before request
+        /// </summary>
+        /// <returns></returns>
+        public CXRequest ClearCookie()
+        {
+            isClearCookies = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Clear cookies of specific URI
+        /// </summary>
+        /// <param name="uri"><see cref="System.Uri"/></param>
+        private void ClearCookies(Uri uri)
+        {
+            if (isClearCookies)
+            {
+                foreach (HttpCookie cookie in mFilter.CookieManager.GetCookies(uri))
+                {
+                    mFilter.CookieManager.DeleteCookie(cookie);
+                }
+            }
         }
 
         /// <summary>
@@ -367,6 +392,7 @@ namespace CXHttpNS
                 tempUrl += "?" + p;
             }
             Uri uri = new Uri(tempUrl);
+            ClearCookies(uri);
             HttpResponseMessage res = await mHttpClient.GetAsync(uri).AsTask(cts.Token).ConfigureAwait(false);
             return new CXResponse(res, mFilter.CookieManager.GetCookies(uri));
         }
@@ -391,6 +417,7 @@ namespace CXHttpNS
                 content = new HttpFormUrlEncodedContent(data);
             }
             Uri uri = new Uri(url);
+            ClearCookies(uri);
             HttpResponseMessage res = await mHttpClient.PostAsync(uri, content).AsTask(cts.Token).ConfigureAwait(false);
             return new CXResponse(res, mFilter.CookieManager.GetCookies(uri));
         }
@@ -402,6 +429,7 @@ namespace CXHttpNS
         public async Task<CXResponse> Delete()
         {
             Uri uri = new Uri(url);
+            ClearCookies(uri);
             HttpResponseMessage res = await mHttpClient.DeleteAsync(uri).AsTask(cts.Token).ConfigureAwait(false);
             return new CXResponse(res, mFilter.CookieManager.GetCookies(uri));
         }
@@ -426,6 +454,7 @@ namespace CXHttpNS
                 content = new HttpFormUrlEncodedContent(data);
             }
             Uri uri = new Uri(url);
+            ClearCookies(uri);
             HttpResponseMessage res = await mHttpClient.PutAsync(uri, content).AsTask(cts.Token).ConfigureAwait(false);
             return new CXResponse(res, mFilter.CookieManager.GetCookies(uri));
         }

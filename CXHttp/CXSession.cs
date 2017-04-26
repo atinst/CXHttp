@@ -13,7 +13,8 @@ namespace CXHttpNS
         private HttpBaseProtocolFilter filter;
         private HttpClient httpClient;
 
-        public readonly CXRequest req;
+        private CXRequest req;
+        public CXRequest Req { get => req; }
 
         /// <summary>
         /// Constructor
@@ -30,6 +31,9 @@ namespace CXHttpNS
             req = new CXRequest(filter, httpClient);
         }
 
+        /// <summary>
+        /// Clear authentication cache
+        /// </summary>
         public void ClearAuthenticationCache()
         {
             filter.ClearAuthenticationCache();
