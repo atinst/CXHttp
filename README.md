@@ -37,7 +37,7 @@ var html = await res.Content();
 
 ```
 
-### HTTP Session (Cookies persisted)
+### HTTP Session (Filter settings (including Cookies) persisted)
 
 ``` C#
 
@@ -45,7 +45,7 @@ var USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (
 var URL = "http://cas.bnu.edu.cn/cas/login?service=http%3A%2F%2Fzyfw.bnu.edu.cn%2FMainFrm.html";
 
 // HTTP Get to Set-Cookie
-var res = await CXHttp.Session("zyfw").req
+var res = await CXHttp.Session("zyfw").Req
     .Url(URL)
     .Header("User-Agent", USER_AGENT)
     .Get();
@@ -53,7 +53,7 @@ var res = await CXHttp.Session("zyfw").req
 // ...
             
 // One name, one session. So Cookies are shared.
-res = await CXHttp.Session("zyfw").req
+res = await CXHttp.Session("zyfw").Req
 	.Url(URL)
 	.Header("User-Agent", USER_AGENT)
 	.Data("username", "username")

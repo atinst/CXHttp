@@ -9,7 +9,7 @@
         /// <returns><c cref="CXRequest">Request</c></returns>
         public static CXRequest Connect(string url)
         {
-            var req = new CXRequest(url);
+            var req = new CXRequest(url).ClearCookie();
             return req;
         }
 
