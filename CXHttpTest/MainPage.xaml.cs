@@ -91,7 +91,7 @@ namespace CXHttpTest
             
             t = await CXHttp.Session("zyfw").Req
                 .Url(URL)
-                .ClearCookie()
+                .ClearCookies()
                 .Header("User-Agent", USER_AGENT)
                 .Data("username", "用户名")
                 .Data("password", "密码")

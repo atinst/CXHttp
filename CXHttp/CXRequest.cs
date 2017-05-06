@@ -329,7 +329,7 @@ namespace CXHttpNS
         /// Set cookie
         /// </summary>
         /// <param name="cookie"><see cref="HttpCookie"/></param>
-        /// <returns></returns>
+        /// <returns><see cref="CXRequest"/></returns>
         public CXRequest Cookie(HttpCookie cookie)
         {
             mFilter.CookieManager.SetCookie(cookie);
@@ -339,10 +339,23 @@ namespace CXHttpNS
         /// <summary>
         /// Set if clear cookies before request
         /// </summary>
-        /// <returns></returns>
-        public CXRequest ClearCookie()
+        /// <returns><see cref="CXRequest"/></returns>
+        public CXRequest ClearCookies()
         {
             isClearCookies = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Clear cookies of specific URL string
+        /// </summary>
+        /// <param name="url">URL string</param>
+        /// <returns><see cref="CXRequest"/></returns>
+        public CXRequest ClearCookies(string url)
+        {
+            isClearCookies = true;
+            ClearCookies(new Uri(url));
+            isClearCookies = false;
             return this;
         }
 
