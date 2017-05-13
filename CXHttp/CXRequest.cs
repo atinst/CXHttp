@@ -19,7 +19,7 @@ namespace CXHttpNS
         private HttpClient mHttpClient;
 
         private string url;
-        private HttpRequestHeaderCollection mHeaders;
+        private List<KeyValuePair<string, string>> mHeaders = new List<KeyValuePair<string, string>>();
 
         private Dictionary<string, string> data = new Dictionary<string, string>();
         private string rawData = "";
@@ -29,7 +29,6 @@ namespace CXHttpNS
         private bool isClearCookies = false;
 
         public HttpBaseProtocolFilter Filter { get { return mFilter; } }
-        public HttpRequestHeaderCollection HeaderCollection { get { return mHeaders; } }
         public HttpClient HttpClient { get { return mHttpClient; } }
 
         /// <summary>
@@ -40,7 +39,6 @@ namespace CXHttpNS
             mFilter = new HttpBaseProtocolFilter();
             mHttpClient = new HttpClient(mFilter);
             cts = new CancellationTokenSource();
-            mHeaders = mHttpClient.DefaultRequestHeaders;
         }
 
         /// <summary>
@@ -52,7 +50,6 @@ namespace CXHttpNS
             mFilter = new HttpBaseProtocolFilter();
             mHttpClient = new HttpClient(mFilter);
             cts = new CancellationTokenSource();
-            mHeaders = mHttpClient.DefaultRequestHeaders;
             this.url = url;
         }
 
@@ -66,7 +63,6 @@ namespace CXHttpNS
             mFilter = filter;
             mHttpClient = client;
             cts = new CancellationTokenSource();
-            mHeaders = mHttpClient.DefaultRequestHeaders;
         }
 
         /// <summary>
@@ -265,18 +261,7 @@ namespace CXHttpNS
         /// <returns><see cref="CXRequest"/></returns>
         public CXRequest Header(string key, string value)
         {
-            this.mHeaders.Add(key, value);
-            return this;
-        }
-
-        /// <summary>
-        /// Concatenate header collection
-        /// </summary>
-        /// <param name="headers"><see cref="HttpRequestHeaderCollection"/></param>
-        /// <returns><see cref="CXRequest"/></returns>
-        public CXRequest Headers(HttpRequestHeaderCollection headers)
-        {
-            this.mHeaders.Concat(headers);
+            this.mHeaders.Add(new KeyValuePair<string, string>(key, value));
             return this;
         }
 
@@ -353,9 +338,10 @@ namespace CXHttpNS
         /// <returns><see cref="CXRequest"/></returns>
         public CXRequest ClearCookies(string url)
         {
-            isClearCookies = true;
-            ClearCookies(new Uri(url));
-            isClearCookies = false;
+            foreach (HttpCookie cookie in mFilter.CookieManager.GetCookies(new Uri(url)))
+            {
+                mFilter.CookieManager.DeleteCookie(cookie);
+            }
             return this;
         }
 
@@ -363,8 +349,12 @@ namespace CXHttpNS
         /// Clear cookies of specific URI
         /// </summary>
         /// <param name="uri"><see cref="System.Uri"/></param>
-        private void ClearCookies(Uri uri)
+        private void PrepareRequest(Uri uri)
         {
+            mHttpClient.DefaultRequestHeaders.Clear();
+            foreach (var pair in mHeaders)
+                mHttpClient.DefaultRequestHeaders.Add(pair.Key, pair.Value);
+
             if (isClearCookies)
             {
                 foreach (HttpCookie cookie in mFilter.CookieManager.GetCookies(uri))
@@ -405,7 +395,7 @@ namespace CXHttpNS
                 tempUrl += "?" + p;
             }
             Uri uri = new Uri(tempUrl);
-            ClearCookies(uri);
+            PrepareRequest(uri);
             HttpResponseMessage res = await mHttpClient.GetAsync(uri).AsTask(cts.Token).ConfigureAwait(false);
             return new CXResponse(res, mFilter.CookieManager.GetCookies(uri));
         }
@@ -430,7 +420,7 @@ namespace CXHttpNS
                 content = new HttpFormUrlEncodedContent(data);
             }
             Uri uri = new Uri(url);
-            ClearCookies(uri);
+            PrepareRequest(uri);
             HttpResponseMessage res = await mHttpClient.PostAsync(uri, content).AsTask(cts.Token).ConfigureAwait(false);
             return new CXResponse(res, mFilter.CookieManager.GetCookies(uri));
         }
@@ -442,7 +432,7 @@ namespace CXHttpNS
         public async Task<CXResponse> Delete()
         {
             Uri uri = new Uri(url);
-            ClearCookies(uri);
+            PrepareRequest(uri);
             HttpResponseMessage res = await mHttpClient.DeleteAsync(uri).AsTask(cts.Token).ConfigureAwait(false);
             return new CXResponse(res, mFilter.CookieManager.GetCookies(uri));
         }
@@ -467,7 +457,7 @@ namespace CXHttpNS
                 content = new HttpFormUrlEncodedContent(data);
             }
             Uri uri = new Uri(url);
-            ClearCookies(uri);
+            PrepareRequest(uri);
             HttpResponseMessage res = await mHttpClient.PutAsync(uri, content).AsTask(cts.Token).ConfigureAwait(false);
             return new CXResponse(res, mFilter.CookieManager.GetCookies(uri));
         }

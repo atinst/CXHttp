@@ -13,8 +13,7 @@ namespace CXHttpNS
         private HttpBaseProtocolFilter filter;
         private HttpClient httpClient;
 
-        private CXRequest req;
-        public CXRequest Req { get => req; }
+        public CXRequest Req { get => new CXRequest(filter, httpClient); }
 
         /// <summary>
         /// Constructor
@@ -28,7 +27,6 @@ namespace CXHttpNS
 
             filter = new HttpBaseProtocolFilter();
             httpClient = new HttpClient(filter);
-            req = new CXRequest(filter, httpClient);
         }
 
         /// <summary>
